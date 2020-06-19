@@ -18,6 +18,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.10.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+    compile 'org.springframework:spring-context'
+    compile 'org.springframework.data:spring-data-mongodb'
+    testCompile 'junit:junit'
+    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

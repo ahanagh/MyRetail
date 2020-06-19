@@ -31,7 +31,8 @@ public class ProductCatalogController {
   @RequestMapping(value = "/product/{id}", method = RequestMethod.GET)
   public String getProductById(@PathVariable("id") String id) {
 	  
-	  Collection resultProduct = repository.searchProductCatalog(id);
+	  List<Product> resultProduct = repository.searchProductCatalog(id);
+	  
       ObjectMapper mapper = new ObjectMapper();
       String productJson = null;
       try {
@@ -58,19 +59,21 @@ public class ProductCatalogController {
   
   @PostMapping("/product")
   public ResponseEntity<?> postProduct(@RequestBody Product product) {
-	  logger.info("Inside postProductCatalog");
+	  logger.info("Inside postProduct");
 	  try {
-		  if(getProductById(product.getId()).equals("[]") && product.getId().matches("[0-9]+")) {
+		  
+		  if(!product.getId().matches("[0-9]+")) {
+			  logger.info("Invalid product id: {}",product.getId());
+			  return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Id is not in proper format");
+		  }
+		  else if(getProductById(product.getId()).equals("[]") && product.getId().matches("[0-9]+")) {
 			  logger.info("Product for saving: {}",product.getId());
 		      Product productSaved = repository.save(product);
 		      return new ResponseEntity<>(productSaved, HttpStatus.CREATED);
 		  }
-		  else if(!product.getId().matches("[0-9]+")) {
-			  logger.info("Invalid product id: {}",product.getId());
-		  }
 		  else if(!getProductById(product.getId()).equals("[]")){
 			  logger.info("Product already present: {}",product.getId());
-			  return new ResponseEntity<>("{}",HttpStatus.OK);
+			  return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Product already present");
 		  }
 	  }
 	  catch(Exception e) {
@@ -93,7 +96,7 @@ public class ProductCatalogController {
 	  catch(Exception e) {
 		  e.printStackTrace();
 	  }
-	  return new ResponseEntity<>("{}",HttpStatus.INTERNAL_SERVER_ERROR);
+	  return new ResponseEntity<>("{}",HttpStatus.NOT_FOUND);
   }
   
   @RequestMapping(value = "/product/{id}", method = RequestMethod.DELETE)
@@ -105,7 +108,7 @@ public class ProductCatalogController {
 	  catch (Exception e) {
 		  e.printStackTrace();
 	  }
-	  return new ResponseEntity<>("{}",HttpStatus.INTERNAL_SERVER_ERROR);
+	  return new ResponseEntity<>("{}",HttpStatus.NOT_FOUND);
   }
 
  
